@@ -3,6 +3,19 @@
 **Disciplina:** Big Data Architecture & Data Integration  
 **Tema:** Indústria Espacial — Monitoramento de ISS e Asteroides
 
+## 👥 Integrantes
+
+| Nome | RM |
+|------|----|
+| Breno Silva | RM97864 |
+| Enrico Marquez | RM99325 |
+| Gustavo Dias | RM550820 |
+| Joel Barros | RM550378 |
+| Leonardo moreira | RM550988 |
+
+---
+
+
 ---
 
 ## Arquitetura do Pipeline

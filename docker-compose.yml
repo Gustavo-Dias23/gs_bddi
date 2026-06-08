@@ -1,0 +1,74 @@
+version: "3.8"
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.9.1
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ""
+    AIRFLOW__WEBSERVER__SECRET_KEY: "gs2026_fiap"
+    # Credenciais Oracle — substitua pelos valores reais
+    ORACLE_USER: ${ORACLE_USER}
+    ORACLE_PASSWORD: ${ORACLE_PASSWORD}
+    ORACLE_HOST: ${ORACLE_HOST:-oracle.fiap.com.br}
+    ORACLE_PORT: ${ORACLE_PORT:-1521}
+    ORACLE_SID: ${ORACLE_SID:-ORCL}
+    # Chave NASA (gratuita em api.nasa.gov)
+    NASA_API_KEY: ${NASA_API_KEY:-DEMO_KEY}
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./data:/opt/airflow/data
+    - airflow_logs:/opt/airflow/logs
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        pip install oracledb pandas requests --quiet
+        airflow db upgrade
+        airflow users create \
+          --username airflow --password airflow \
+          --firstname Admin --lastname FIAP \
+          --role Admin --email admin@fiap.com.br
+    restart: "no"
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  airflow_logs:

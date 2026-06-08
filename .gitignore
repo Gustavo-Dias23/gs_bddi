@@ -1,0 +1,26 @@
+# Credenciais
+.env
+
+# Dados gerados automaticamente
+data/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+
+# Airflow (se rodar local)
+logs/
+airflow.db
+airflow.cfg
+webserver_config.py
+standalone_admin_password.txt

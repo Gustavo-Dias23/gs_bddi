@@ -44,7 +44,7 @@
 
 ```bash
 # 1. Clone o repositório
-git clone [<url>](https://github.com/Gustavo-Dias23/gs_bddi)
+git clone (https://github.com/Gustavo-Dias23/gs_bddi)
 
 # 2. Configure credenciais
 cp .env.example .env
